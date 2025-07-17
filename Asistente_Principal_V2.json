@@ -1,0 +1,909 @@
+{
+  "name": "Asistente Principal V2",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        260,
+        -480
+      ],
+      "id": "a12c3df9-3185-4fba-91f4-046ebaf34a41",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "zakv3aiGrrBGEeC3",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message_text }}",
+        "options": {
+          "systemMessage": "=Reglas generales\n\n- Si el usuario menciona el nombre de un fisioterapeuta, debes tenerlo en cuenta en todas las acciones.\n- Si el usuario no menciona ningún profesional, pregúntale con quién desea la cita antes de continuar.\n- Nunca tomes ninguna acción sin que el usuario lo confirme claramente.\n- Todas las citas tienen una duración fija de 1 hora. Al consultar o crear una cita, asume siempre que la franja completa es de una hora.\n- Elige siempre la acción adecuada en base a lo que dice el usuario, pero responde de forma natural y clara.\n- Siempre que te pidan la disponibilidad en hora, día o profesional, o una combinación, debes hacer las comprobaciones y no suponer nada.\n- Antes de crear, consultar, modificar o cancelar citas, llama siempre a la herramienta Gestion_Clientes para obtener los datos actuales del cliente.\n\nUso de Gestion_Clientes\n\n- Cuando alguien envíe un mensaje, revisa si su ClienteID ya está registrado en la base de datos con un nombre_cliente.\n  - Si está registrado, usa siempre su nombre_cliente guardado para saludarlo y responderle. Ejemplo: “Hola [nombre_cliente], ¿en qué puedo ayudarte?”\n  - Si no está registrado, no guardes nada en la base de datos todavía y habla normalmente sin pedir datos personales.\n  - Solo cuando el usuario quiera crear, modificar, cancelar o consultar una cita, pide su nombre_cliente, teléfono y email y guarda estos datos completos en la base de datos antes de realizar la acción.\n- El nombre_cliente, teléfono y email son obligatorios para crear un nuevo cliente. Nunca guardes un cliente en la base de datos si no tienes los tres datos completos.\n- Si ya tenemos al cliente registrado en la base de datos, nunca le pidas de nuevo sus datos personales. Usa siempre la información guardada y pídele solo una confirmación antes de realizar la acción.\n- Si el usuario solicita ver sus datos personales o quiere modificarlos, muéstralos o actualízalos según lo pida.\n- El chat_id es un identificador interno de la base de datos y nunca debe mostrarse ni mencionarse al usuario.\n- Por defecto, envía el campo modificar como false.\n- Si el usuario dice explícitamente que quiere cambiar sus datos personales como nombre_cliente, teléfono o email, entonces envía modificar como true y solicita los nuevos datos.\n- Nota: nombre_cliente se refiere siempre al nombre del usuario con el que estás conversando, no al nombre del profesional que lo atenderá. El asistente nunca debe inventar un nombre_cliente si no existe en la base de datos.\n\nLógica de decisión\n1. Si el usuario indica fecha, hora y fisioterapeuta:\n- Comprueba disponibilidad.\n- Si está disponible responde: “La franja horaria con [nombre del profesional] está disponible. ¿Deseas que te agende la cita?”\n- Si está ocupada responde: “Lo siento, ese horario con [nombre del profesional] ya está reservado.”\n\n2. Si el usuario da solo la fecha y menciona al profesional:\n- Consulta todos los horarios disponibles para ese día con ese profesional.\n- Responde con: “Estos son los horarios disponibles con [nombre del profesional] para ese día: 09:00, 10:00, 11:30…”\n\n3. Si el usuario confirma que quiere una cita en una franja disponible:\n- Agenda la cita usando los datos que tengas en la base de datos.\n- Si falta algún dato, solicita al usuario el nombre, teléfono o email antes de continuar.\n- Confirma con: “Tu cita con [nombre del profesional] ha sido agendada correctamente para el [fecha] a las [hora].”\n\n4. Si el usuario quiere cancelar una cita:\n- Asegúrate de que indica la fecha, hora y el profesional de la cita.\n- Identifica al usuario únicamente con su ClienteID desde la base de datos.\n- Si la cita existe y pertenece a ese ClienteID, responde: “Tu cita ha sido cancelada correctamente.”\n- Si no se encuentra ninguna cita para su ClienteID, responde: “No hemos encontrado ninguna cita asociada. ¿Quieres que revise otras fechas o profesionales?”\n\n5. Si el usuario quiere modificar una cita existente:\n- Asegúrate de que indica la fecha y hora actuales de su cita, y también la nueva fecha y hora deseadas, junto con el profesional.\n- Identifica al usuario únicamente con su ClienteID desde la base de datos.\n- Comprueba si la nueva franja horaria está libre.\n- Si está libre responde: “Ese nuevo horario con [nombre del profesional] está disponible. ¿Quieres modificar tu cita actual?”\n- Si el usuario lo confirma, realiza el cambio y responde: “Tu cita ha sido actualizada correctamente.”\n- Si el nuevo horario está ocupado responde: “Esa franja horaria ya está reservada. ¿Quieres que te proponga otros horarios con [nombre del profesional]?”\n\n6. Contexto de fecha actual\n- Hoy es: {{ $now }}\n- Esta fecha debe usarse como referencia absoluta para cualquier acción o respuesta.\n- Si el usuario dice “hoy”, “mañana” o “pasado mañana”, debes calcular la fecha real correspondiente comparando con la fecha actual.\n- Nunca asumas que \"hoy\" es una fecha fija. Trabaja siempre en base a la fecha actual proporcionada por el sistema.\n\n7. Uso de la herramienta FAQ para preguntas informativas o genéricas\n\n- Si la intención del usuario es reservar, cancelar, modificar o consultar citas, aplica la lógica normal para gestionar la cita.\n- Si el usuario hace una pregunta informativa o general (como precios, ubicación, servicios, horarios, qué profesionales trabajan, etc.), utiliza siempre la herramienta llamada FAQ.\n- Pasa la pregunta del usuario tal como la ha formulado a la herramienta FAQ para buscar la respuesta.\n- Si la FAQ contiene la respuesta, devuélvela directamente al usuario de forma clara y natural.\n- Si la FAQ no tiene una respuesta para la pregunta, responde de forma neutra:\n“No dispongo de esa información en este momento. ¿Quiere que le ponga en contacto con el centro para resolver su duda?”\n- Nunca inventes información para preguntas generales. Solo debes responder lo que está en la FAQ o informar al usuario de que no se encuentra la respuesta.\n- Ejemplo\n  Usuario: ¿Trabajáis los sábados?\n  Acción: Usa la herramienta FAQ con la pregunta “¿Trabajáis los sábados?”\n- Si la FAQ no tiene esa información responde: “No dispongo de esa información en este momento. ¿Quiere que le ponga en contacto con el centro?”"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        260,
+        -280
+      ],
+      "id": "c7179f4e-358e-43bb-af19-1774c6986478",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "name": "Verificar_Disponibilidad",
+        "description": "=Esta herramienta verifica si un horario específico está disponible en la agenda del fisioterapeuta.\n\n📌 **Cuando usarla:**\n- Llama a esta herramienta si el usuario ha proporcionado una **fecha y hora exactas**.\n- No la llames si el usuario solo ha dado una fecha sin hora; en ese caso, usa `Generar_Horarios_Disponibles`.\n\n**Datos esperados**\n- `fecha`: La fecha de la cita en formato `YYYY-MM-DD`.\n- `hora`: La hora solicitada en formato `HH:MM`.",
+        "workflowId": {
+          "__rl": true,
+          "value": "AvZr2iYmHGJDdo9Y",
+          "mode": "list",
+          "cachedResultName": "Verificar_Disponibilidad _V2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "={{ $fromAI('fecha', ``, 'string') }}",
+            "hora": "={{ $fromAI('hora', ``, 'string') }}",
+            "profesional": "={{ $fromAI('profesional', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "hora",
+              "displayName": "hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "profesional",
+              "displayName": "profesional",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -40
+      ],
+      "id": "d5342f71-0005-4d89-9595-26a7451ba56f",
+      "name": "Verificar_Disponibilidad"
+    },
+    {
+      "parameters": {
+        "name": "Generar_Horarios_Disponibles",
+        "description": "=Generar_HorarioEsta herramienta devuelve una lista de horarios disponibles en un día específico dentro del horario laboral del fisioterapeuta.\n\n📌 **Cuándo llamarla:**\n- Úsala cuando el usuario **solo menciona una fecha** pero **no especifica una hora**.\n- Úsala si `Verificar_Disponibilidad` devuelve `false`, para sugerir horarios alternativos disponibles.\n- NO la llames si el usuario ya ha seleccionado una hora y está disponible.\n\n📥 **Inputs esperados:**\n- `fecha`: La fecha para la que se quieren obtener los horarios, en formato `YYYY-MM-DD`.\n\n📤 **Output esperado:**\n```json\n{\n  \"disponibles\": [\"09:00\", \"10:00\", \"12:00\", \"14:00\", \"16:00\"]\n}\n",
+        "workflowId": {
+          "__rl": true,
+          "value": "HyKPZfkuXMFW1TMs",
+          "mode": "list",
+          "cachedResultName": "Generar_Horarios_Disponibles  V2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fecha', ``, 'string') }}",
+            "profesional": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('profesional', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "fecha"
+          ],
+          "schema": [
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "profesional",
+              "displayName": "profesional",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        180,
+        -40
+      ],
+      "id": "f282174d-8cb6-44fa-8bca-c01ef515fede",
+      "name": "Generar_Horarios_Disponibles"
+    },
+    {
+      "parameters": {
+        "name": "Crear_Evento",
+        "description": "=📅 **Tool: `Crear_Evento`**  \nEsta herramienta permite **agendar una cita en Google Calendar** para el fisioterapeuta en una fecha y hora específicas.\n\n---\n\n🔹 **Cuándo usar esta herramienta:**\n- **Solo si el usuario ha confirmado que quiere reservar una cita.**\n- **Solo si `Verificar_Disponibilidad` ha indicado que la franja horaria está libre.**\n- **Nunca se debe llamar automáticamente sin la aprobación del usuario.**\n\n---\n\n📥 **Inputs esperados:**\n- `fecha`: La fecha de la cita en formato `YYYY-MM-DD`.\n- `hora`: La hora de inicio de la cita en formato `HH:mm`.\n- `nombre`: El nombre del paciente (si se ha proporcionado).\n- `email`: El email del paciente (si se ha proporcionado).\n\n---\n\n📤 **Output esperado:**\n```json\n{\n  \"evento_creado\": true,\n  \"detalles\": {\n    \"fecha\": \"2025-03-22\",\n    \"hora\": \"10:00\",\n    \"link\": \"https://calendar.google.com/event?eid=xyz\"\n  }\n}\n",
+        "workflowId": {
+          "__rl": true,
+          "value": "vlKJrDta3amJe4uF",
+          "mode": "list",
+          "cachedResultName": "Crear_Evento  V2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('email', ``, 'string') }}",
+            "nombre": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nombre', ``, 'string') }}",
+            "hora": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('hora', `En formato hh:mm:ss`, 'string') }}",
+            "fecha": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fecha', `En formato yyy/mm/dd`, 'string') }}",
+            "profesional": "={{ $fromAI('profesional', ``, 'string') }}",
+            "ClienteID": "={{ $('Datos').item.json.chat_id }}",
+            "numero": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('numero', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "hora",
+              "displayName": "hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "profesional",
+              "displayName": "profesional",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "numero",
+              "displayName": "numero",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "ClienteID",
+              "displayName": "ClienteID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        360,
+        -20
+      ],
+      "id": "a1733225-e004-48a0-8f79-aa969b36a3d8",
+      "name": "Crear_Evento"
+    },
+    {
+      "parameters": {
+        "name": "Cancelar_Cita",
+        "description": "=Úsala solo cuando el usuario quiera cancelar una cita de forma definitiva.\nNunca la uses para modificar una cita. \nSi el usuario quiere cambiar la fecha u hora de su cita, usa Modificar_Cita, no Cancelar_Cita.\n",
+        "workflowId": {
+          "__rl": true,
+          "value": "z3PfRN1tiEK8i5BA",
+          "mode": "list",
+          "cachedResultName": "Cancelar_Cita  V2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fecha', ``, 'string') }}",
+            "hora": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('hora', ``, 'string') }}",
+            "telefono": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('telefono', ``, 'string') }}",
+            "profesional": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('profesional', ``, 'string') }}",
+            "ClienteID": "={{ $('Datos').item.json.chat_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "hora",
+              "displayName": "hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "profesional",
+              "displayName": "profesional",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "ClienteID",
+              "displayName": "ClienteID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "id": "4a430b44-f142-4148-9aa6-bc1cb451a99d",
+      "name": "Cancelar_Cita"
+    },
+    {
+      "parameters": {
+        "name": "Modificar_Cita",
+        "description": "Usaras esta herramienta cuando el usuario tenga intencion de modificar una cita",
+        "workflowId": {
+          "__rl": true,
+          "value": "DyjbwDWVqkoB19RT",
+          "mode": "list",
+          "cachedResultName": "Modificar_Cita  V2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "HoraNueva": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('HoraNueva', ``, 'string') }}",
+            "fechaNueva": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fechaNueva', ``, 'string') }}",
+            "telefono": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('telefono', ``, 'string') }}",
+            "hora": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('hora', ``, 'string') }}",
+            "fecha": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fecha', ``, 'string') }}",
+            "descripcion": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('descripcion', ``, 'string') }}",
+            "profesional": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('profesional', ``, 'string') }}",
+            "ClienteID": "={{ $('Datos').item.json.chat_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "hora",
+              "displayName": "hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "fechaNueva",
+              "displayName": "fechaNueva",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "HoraNueva",
+              "displayName": "HoraNueva",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "descripcion",
+              "displayName": "descripcion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "profesional",
+              "displayName": "profesional",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "ClienteID",
+              "displayName": "ClienteID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        640,
+        0
+      ],
+      "id": "e8f2c5a4-5fed-4683-bae9-b63cf4b839c7",
+      "name": "Modificar_Cita"
+    },
+    {
+      "parameters": {
+        "name": "Obtener_Citas",
+        "description": "Esta herramienta la usaras cuando el usuario quiera obtener sus citas",
+        "workflowId": {
+          "__rl": true,
+          "value": "GeBpYi8Gibw8TllQ",
+          "mode": "list",
+          "cachedResultName": "Obtener_Citas V2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telefono": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('telefono', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "telefono"
+          ],
+          "schema": [
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        -60
+      ],
+      "id": "b24c7f77-eeb4-4925-845f-35a37f5b28c9",
+      "name": "Obtener_Citas"
+    },
+    {
+      "parameters": {
+        "description": "Úsala solo cuando el usuario quiera información sobre el centro o sobre alguna consulta\n",
+        "workflowId": {
+          "__rl": true,
+          "value": "OxIL0ED7Tsh4jmmp",
+          "mode": "list",
+          "cachedResultName": "FAQ V2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "duda": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('duda', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "duda"
+          ],
+          "schema": [
+            {
+              "id": "duda",
+              "displayName": "duda",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1020,
+        -40
+      ],
+      "id": "6b023268-8c24-479b-975a-cb876a2531b9",
+      "name": "FAQ"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Datos').item.json.chat_id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        860,
+        -280
+      ],
+      "id": "8a4d740a-4907-4399-bb93-5c5bf30cd20a",
+      "name": "Send a text message",
+      "webhookId": "feeb3657-ceeb-4823-bf05-c30030b9a20c",
+      "credentials": {
+        "telegramApi": {
+          "id": "L3emIcgf7R6djVr1",
+          "name": "JosepBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a74e1514-9bf9-4e2d-acc7-0b2bd6bd1113",
+              "name": "chat_id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "5c4a9e55-6fc5-4f07-bbec-53b00cebecf5",
+              "name": "message_text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -20,
+        -280
+      ],
+      "id": "d59b1974-ce47-4f59-955d-ce3b788116db",
+      "name": "Datos"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -340,
+        -280
+      ],
+      "id": "ec008aad-2538-4ad9-85e3-21607e97b793",
+      "name": "JosepBot",
+      "webhookId": "2d2080bd-c638-45c1-bc13-2cb99e7c27ff",
+      "credentials": {
+        "telegramApi": {
+          "id": "L3emIcgf7R6djVr1",
+          "name": "JosepBot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Este flujo se usa para crear, obtener y actualizar los datos de un cliente en la base de datos.",
+        "workflowId": {
+          "__rl": true,
+          "value": "kBbCk7NWMTxnHxOx",
+          "mode": "list",
+          "cachedResultName": "Gestion_Clientes V2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('email', ``, 'string') }}",
+            "telefono": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('telefono', ``, 'string') }}",
+            "chat_id": "={{ $('Datos').item.json.chat_id }}",
+            "modificar": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('modificar', ``, 'string') }}",
+            "nombre_cliente": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nombre_cliente', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "nombre_cliente",
+              "displayName": "nombre_cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "modificar",
+              "displayName": "modificar",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1220,
+        -60
+      ],
+      "id": "b5aa8709-9a4d-452a-be22-6764b73f9154",
+      "name": "Gestion_Clientes"
+    },
+    {
+      "parameters": {
+        "content": "{{ $('Datos').item.json.chat_id }}"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        660,
+        -560
+      ],
+      "id": "62e7f77b-66eb-464a-b2b6-59886eba49d5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Datos').item.json.chat_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        -500
+      ],
+      "id": "6dc8b7d6-4593-4113-ba78-dce20a719e45",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar_Disponibilidad": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar_Horarios_Disponibles": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear_Evento": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cancelar_Cita": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modificar_Cita": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener_Citas": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FAQ": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JosepBot": {
+      "main": [
+        [
+          {
+            "node": "Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gestion_Clientes": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fbd784ed-3722-4815-935d-23afa48e5ff4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d051716d31b47e82869244b00323064210b99143f3d8d00d35d6b51296b9d2e4"
+  },
+  "id": "0UOOoC4UH8BKQ369",
+  "tags": [
+    {
+      "createdAt": "2025-05-20T07:01:25.686Z",
+      "updatedAt": "2025-05-20T07:01:25.686Z",
+      "id": "duJ951xsaFzMxE5Z",
+      "name": "Reservas_Citas_V2"
+    }
+  ]
+}

@@ -1,0 +1,330 @@
+{
+  "name": "Generar_Horarios_Disponibles  V2",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "fecha"
+            },
+            {
+              "name": "profesional"
+            }
+          ]
+        }
+      },
+      "id": "b6e3819f-caae-45e4-801e-cbc8f374bbbb",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -120,
+        220
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        480
+      ],
+      "id": "1411d367-aaf5-4821-8287-2fa76f7a5fba",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "horas",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        860,
+        340
+      ],
+      "id": "3ac68530-8355-4481-90d4-35e7346855d3",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "fechaCompleta",
+              "renameField": true,
+              "outputFieldName": "disponibles"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1660,
+        240
+      ],
+      "id": "8574e9ac-fceb-42d6-a317-84e86e73771e",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7e4958dd-15e5-4f46-8c78-2f987a69ecee",
+              "leftValue": "={{ $json.disponible }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1380,
+        340
+      ],
+      "id": "153a3e38-1e9e-4e0f-a1dc-c3b9e922eb3c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "AvZr2iYmHGJDdo9Y",
+          "mode": "list",
+          "cachedResultName": "Verificar_Disponibilidad _V2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "={{ $json.fecha }}",
+            "hora": "={{ $json.horas }}",
+            "profesional": "={{ $json.profesional }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "hora",
+              "displayName": "hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "profesional",
+              "displayName": "profesional",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1160,
+        340
+      ],
+      "id": "9510950f-2fdc-4c49-8be6-a94bbd7d4acf",
+      "name": "Llamar Verificar_Disponibilidad V2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1614fb11-6f3a-4b48-bcce-2f7c62c48202",
+              "name": "fecha",
+              "value": "2025-04-09",
+              "type": "string"
+            },
+            {
+              "id": "3f5fa9af-b607-4dbc-bb42-e0c01693bfda",
+              "name": "profesional",
+              "value": "Anna V2",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        100,
+        480
+      ],
+      "id": "3ef17c8a-f40d-4907-906c-e038393d0bfe",
+      "name": "Datos Demo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4a155681-530f-4a54-820c-b36a01a0acab",
+              "name": "fecha",
+              "value": "={{ $json.fecha }}",
+              "type": "string"
+            },
+            {
+              "id": "785bb8df-ff61-4b77-a697-23b951690bd0",
+              "name": "horas",
+              "value": "={{[\"09:00\", \"10:00\", \"11:00\", \"12:00\", \"13:00\", \"14:00\", \"15:00\", \"16:00\", \"17:00\", \"18:00\"]}}",
+              "type": "array"
+            },
+            {
+              "id": "1595eb56-5d48-403d-866f-4199c98b54fd",
+              "name": "profesional",
+              "value": "={{ $json.profesional }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        340
+      ],
+      "id": "e81f91b2-6b0e-4259-b55e-e18cba80c0e3",
+      "name": "Listado horas + Datos Flujo"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Listado horas + Datos Flujo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Datos Demo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Llamar Verificar_Disponibilidad V2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Llamar Verificar_Disponibilidad V2": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos Demo": {
+      "main": [
+        [
+          {
+            "node": "Listado horas + Datos Flujo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listado horas + Datos Flujo": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a8c7ef7a-67b7-4af6-af22-c0c6bce292b5",
+  "meta": {
+    "instanceId": "d051716d31b47e82869244b00323064210b99143f3d8d00d35d6b51296b9d2e4"
+  },
+  "id": "HyKPZfkuXMFW1TMs",
+  "tags": [
+    {
+      "createdAt": "2025-05-20T07:01:25.686Z",
+      "updatedAt": "2025-05-20T07:01:25.686Z",
+      "id": "duJ951xsaFzMxE5Z",
+      "name": "Reservas_Citas_V2"
+    }
+  ]
+}

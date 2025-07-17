@@ -1,0 +1,257 @@
+{
+  "name": "Obtener_Citas V2",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "telefono"
+            }
+          ]
+        }
+      },
+      "id": "50309d5f-39e5-406a-8d7a-6b90f2558c7b",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -120,
+        360
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        600
+      ],
+      "id": "5f8ce090-3fff-4a92-a8dc-f1620f592f18",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "const calendarioProfesionales = {\n  \"Anna\": \"510264bb771458e9a3ef1d9fe25e3c35ea6e91993bb79ec0b9fb3d8c47c4bb4d@group.calendar.google.com\",\n  \"Pedro\": \"7e5ed1954fdc01773575c32b6f534129c2cba259d3347a666c13d4ca7517262b@group.calendar.google.com\",\n  \"Sara\": \"017d096ba0b356b8db8f7e5e1fd79fd7a7350ba4c7b95246d3f64c4a03bf1ebb@group.calendar.google.com\",\n  \"Sonia Garcia\": \"827c073d820d6c87852d4f0167224eb03141f55e9ba8b5c2e96a3b5860a1a41f@group.calendar.google.com\"\n};\n\nconst resultado = [];\n\nfor (const [profesional, calendarId] of Object.entries(calendarioProfesionales)) {\n  resultado.push({ profesional, calendarId });\n}\n\nreturn resultado;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        540,
+        480
+      ],
+      "id": "3344ffed-eff1-441f-be99-dfcbd30d5031",
+      "name": "Profesionales + CalendarId"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        820,
+        480
+      ],
+      "id": "5b78298a-cc2a-435c-9173-fd0dbfc55175",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "={{ $json.calendarId }}",
+          "mode": "id"
+        },
+        "timeMax": "={{ $now.plus({ week: 2 }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        1160,
+        500
+      ],
+      "id": "8984f509-512f-463b-9b05-b1c977a73572",
+      "name": "Google Calendar1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "IcuYXSaofNNuap0i",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1bdb23fb-a97a-4256-aedb-65f27d71440a",
+              "name": "telefono",
+              "value": "33333",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -60,
+        600
+      ],
+      "id": "4381b9e3-45d1-4e8b-be77-40328441fecb",
+      "name": "Datos Demo"
+    },
+    {
+      "parameters": {
+        "jsCode": "const telefono = $('Datos').first().json.telefono;\nconst reservas = [];\n\nfor (const item of items) {\n  const desc = item.json.description || \"\";\n\n  if (desc.includes(telefono)) {\n    reservas.push({\n      id: item.json.id,\n      profesional: $('Loop Over Items').first().json.profesional,\n      fechaInicio: item.json.start?.dateTime || item.json.start?.date,\n      fechaFin: item.json.end?.dateTime || item.json.end?.date\n    });\n  }\n}\n\nreturn [\n  {\n    json: {\n      reservas\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1480,
+        500
+      ],
+      "id": "c1fb176a-0897-4739-8a0d-463a5e70aa0a",
+      "name": "Agrupar + Filtrar por teléfono"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "04dee48d-d58a-433b-a821-9d8d5235f6ad",
+              "name": "telefono",
+              "value": "={{ $json.telefono }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        260,
+        480
+      ],
+      "id": "3122bca2-8476-469c-add8-bbafc3a28769",
+      "name": "Datos"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Datos Demo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Profesionales + CalendarId": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Google Calendar1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar1": {
+      "main": [
+        [
+          {
+            "node": "Agrupar + Filtrar por teléfono",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos Demo": {
+      "main": [
+        [
+          {
+            "node": "Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agrupar + Filtrar por teléfono": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos": {
+      "main": [
+        [
+          {
+            "node": "Profesionales + CalendarId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "240facaf-1e94-4bef-823b-b1a36ed35b68",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d051716d31b47e82869244b00323064210b99143f3d8d00d35d6b51296b9d2e4"
+  },
+  "id": "GeBpYi8Gibw8TllQ",
+  "tags": [
+    {
+      "createdAt": "2025-05-20T07:01:25.686Z",
+      "updatedAt": "2025-05-20T07:01:25.686Z",
+      "id": "duJ951xsaFzMxE5Z",
+      "name": "Reservas_Citas_V2"
+    }
+  ]
+}

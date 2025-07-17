@@ -1,0 +1,493 @@
+{
+  "name": "Crear_Evento  V2",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        460
+      ],
+      "id": "c4bafbc9-3caf-4f2e-ae9f-96b0a313fe9e",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "50c7e5d2-37f4-4483-90fb-7f848fe7c74d",
+              "name": "startDate",
+              "value": "={{ (() => {\n    const gap = 60;\n    const startDate = new Date(`${$json.fecha} ${$json.hora}`);\n    const endDate = new Date(startDate.getTime() - 2 * 60 * 60 * 1000);  // restar 6 horas\n\n    const formatNumber = (num) => (num < 10 ? '0' : '') + num;\n\n    const formattedDate = endDate.getFullYear() + '-' +\n        formatNumber(endDate.getMonth() + 1) + '-' +\n        formatNumber(endDate.getDate()) + ' ' +\n        formatNumber(endDate.getHours()) + ':' +\n        formatNumber(endDate.getMinutes()) + ':' +\n        formatNumber(endDate.getSeconds());\n\n    return formattedDate;\n})() }}\n",
+              "type": "string"
+            },
+            {
+              "id": "fbb66e15-7979-4a92-a6cb-72b6bebb8482",
+              "name": "endDate",
+              "value": "={{ (() => {\n    const gap = 60;\n    const startDate = new Date(`${$json.fecha} ${$json.hora}`);\n    const endDate = new Date(startDate.getTime() + (gap * 60 * 1000) - (2 * 60 * 60 * 1000));\n\n    const formatNumber = (num) => (num < 10 ? '0' : '') + num;\n\n    const formattedDate = endDate.getFullYear() + '-' +\n        formatNumber(endDate.getMonth() + 1) + '-' +\n        formatNumber(endDate.getDate()) + ' ' +\n        formatNumber(endDate.getHours()) + ':' +\n        formatNumber(endDate.getMinutes()) + ':' +\n        formatNumber(endDate.getSeconds());\n\n    return formattedDate;\n})() }}\n",
+              "type": "string"
+            },
+            {
+              "id": "56d87fae-ccab-4acb-b918-faf26ed4d182",
+              "name": "nombre",
+              "value": "={{ $json.nombre || 'Cliente desconocido' }}",
+              "type": "string"
+            },
+            {
+              "id": "6845e837-b9cc-464c-b463-1a7d02dce7a4",
+              "name": "email",
+              "value": "={{ $json.email || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "2cc05235-5135-4123-95f6-5fde8cf63a5b",
+              "name": "numero",
+              "value": "={{ $json.numero || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "4245b492-dfcd-4387-ab36-6a2100bac8f7",
+              "name": "profesional",
+              "value": "={{ $json.profesional || 'Anna V2' }}",
+              "type": "string"
+            },
+            {
+              "id": "a32767cc-109e-44dc-ae52-3bb9dcce46ad",
+              "name": "ClienteID",
+              "value": "={{ $json.ClienteID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        100
+      ],
+      "id": "424146ca-d8a7-4203-8c85-421f738d1a39",
+      "name": "Formato datos"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "fecha"
+            },
+            {
+              "name": "hora"
+            },
+            {
+              "name": "nombre"
+            },
+            {
+              "name": "email"
+            },
+            {
+              "name": "profesional"
+            },
+            {
+              "name": "numero"
+            },
+            {
+              "name": "ClienteID"
+            }
+          ]
+        }
+      },
+      "id": "b8da6f31-1b52-4451-8844-b447d72728b7",
+      "typeVersion": 1.1,
+      "name": "Inputs",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        140,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2063fcc6-6be4-4c1e-92fb-576bc39a1f7e",
+              "name": "startDate",
+              "value": "={{ $json.startDate }}",
+              "type": "string"
+            },
+            {
+              "id": "0b202e8e-5d80-423d-a755-2400e04018ae",
+              "name": "endDate",
+              "value": "={{ $json.endDate }}",
+              "type": "string"
+            },
+            {
+              "id": "4f2c8893-74b8-482f-aeee-0221b01e9993",
+              "name": "nombre",
+              "value": "={{ $json.nombre }}",
+              "type": "string"
+            },
+            {
+              "id": "f59a4e40-f140-4552-87b3-22e55b6dd18f",
+              "name": "email",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "f0ed32e3-885f-4481-b813-8343d7243692",
+              "name": "numero",
+              "value": "={{ $json.numero }}",
+              "type": "string"
+            },
+            {
+              "id": "af5f7a03-e4c8-4dd4-b9c6-5ec8b26383d9",
+              "name": "profesional",
+              "value": "={{ $json.profesional }}",
+              "type": "string"
+            },
+            {
+              "id": "5823353b-f68c-4b5b-a6c6-a9e6d733b8b3",
+              "name": "=ClienteID",
+              "value": "={{ $json.ClienteID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        260
+      ],
+      "id": "5558b0f2-a4df-4c58-900b-5c724914570f",
+      "name": "Datos Flujo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a5c75ddc-7372-4fe0-a0a6-cd59dac872de",
+              "name": "fecha",
+              "value": "2025-05-23",
+              "type": "string"
+            },
+            {
+              "id": "ea0d1063-eeb2-474c-8b16-3749338b3e1a",
+              "name": "hora",
+              "value": "12:00",
+              "type": "string"
+            },
+            {
+              "id": "9c192f48-81db-4f79-8972-c7179204735f",
+              "name": "nombre",
+              "value": "Pepito",
+              "type": "string"
+            },
+            {
+              "id": "660be1e0-4f61-4307-a904-51ee9e40dc96",
+              "name": "email",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "a9c7c28a-98f0-4d1b-9c81-8bae541f1f51",
+              "name": "numero",
+              "value": "636577185",
+              "type": "string"
+            },
+            {
+              "id": "7b096ed5-73d7-4175-b4fb-230bf251ea0b",
+              "name": "profesional",
+              "value": "Anna V2",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        460
+      ],
+      "id": "d506d40b-9bce-4f1b-a881-c73c50223b31",
+      "name": "Datos Demo 1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "50c7e5d2-37f4-4483-90fb-7f848fe7c74d",
+              "name": "startDate",
+              "value": "={{ (() => {\n    const gap = 60\n    const startDate = new Date(`${$json.fecha} ${$json.hora}`);\n    const endDate = new Date(startDate.getTime());\n\n    const formatNumber = (num) => (num < 10 ? '0' : '') + num;\n\n    const formattedDate = endDate.getFullYear() + '-' +\n        formatNumber(endDate.getMonth() + 1) + '-' +\n        formatNumber(endDate.getDate()) + ' ' +\n        formatNumber(endDate.getHours()) + ':' +\n        formatNumber(endDate.getMinutes()) + ':' +\n        formatNumber(endDate.getSeconds());\n\n    return formattedDate;\n})() }}",
+              "type": "string"
+            },
+            {
+              "id": "fbb66e15-7979-4a92-a6cb-72b6bebb8482",
+              "name": "endDate",
+              "value": "={{ (() => {\n    const gap = 60\n    const startDate = new Date(`${$json.fecha} ${$json.hora}`);\n    const endDate = new Date(startDate.getTime() + (gap * 60 * 1000));\n\n    const formatNumber = (num) => (num < 10 ? '0' : '') + num;\n\n    const formattedDate = endDate.getFullYear() + '-' +\n        formatNumber(endDate.getMonth() + 1) + '-' +\n        formatNumber(endDate.getDate()) + ' ' +\n        formatNumber(endDate.getHours()) + ':' +\n        formatNumber(endDate.getMinutes()) + ':' +\n        formatNumber(endDate.getSeconds());\n\n    return formattedDate;\n})() }}",
+              "type": "string"
+            },
+            {
+              "id": "56d87fae-ccab-4acb-b918-faf26ed4d182",
+              "name": "nombre",
+              "value": "={{ $json.nombre || 'Cliente desconocido' }}",
+              "type": "string"
+            },
+            {
+              "id": "6845e837-b9cc-464c-b463-1a7d02dce7a4",
+              "name": "email",
+              "value": "={{ $json.email ? $json.email : undefined }}",
+              "type": "string"
+            },
+            {
+              "id": "da02c939-a612-4685-9210-8b14efe6b929",
+              "name": "numero",
+              "value": "={{ $json.numero}}",
+              "type": "string"
+            },
+            {
+              "id": "e7aaebb2-9ae6-4e89-b179-05954bc5dc9b",
+              "name": "profesional",
+              "value": "={{ $json.profesional}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        460
+      ],
+      "id": "5f83e104-a2af-4da8-b3a4-659184e24a12",
+      "name": "Datos Demo 2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "358a98db-023f-4979-b215-a783152332c7",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1280,
+        200
+      ],
+      "id": "30dc54e3-41f7-4b0b-9648-953736a18b78",
+      "name": "Error Exsite"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "vjPXXPvk6cQVuEJy",
+          "mode": "list",
+          "cachedResultName": "Obtener_Id_Profesional V2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "profesional": "={{ $json.profesional }}"
+          },
+          "matchingColumns": [
+            "profesional"
+          ],
+          "schema": [
+            {
+              "id": "profesional",
+              "displayName": "profesional",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1020,
+        260
+      ],
+      "id": "f3ae5a3a-a2ee-43df-be70-5053e5d7edca",
+      "name": "Id_Profesional1"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "={{ $('Id_Profesional1').item.json.calendarId }}",
+          "mode": "id"
+        },
+        "start": "={{ $('Datos Flujo').item.json.startDate }}",
+        "end": "={{ $('Datos Flujo').item.json.endDate }}",
+        "additionalFields": {
+          "attendees": [],
+          "description": "=Numero telefono: {{ $('Datos Flujo').item.json.numero }}\nClienteID: {{ $('Datos Flujo').item.json.ClienteID }}",
+          "summary": "=Citas con {{ $('Datos Flujo').item.json.nombre }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        1520,
+        320
+      ],
+      "id": "703b68de-4dc4-4d20-ab60-bcbbdd196509",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "IcuYXSaofNNuap0i",
+          "name": "Google Calendar account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Datos Demo 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formato datos": {
+      "main": [
+        [
+          {
+            "node": "Datos Flujo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inputs": {
+      "main": [
+        [
+          {
+            "node": "Formato datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos Flujo": {
+      "main": [
+        [
+          {
+            "node": "Id_Profesional1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos Demo 1": {
+      "main": [
+        [
+          {
+            "node": "Datos Demo 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos Demo 2": {
+      "main": [
+        [
+          {
+            "node": "Datos Flujo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Id_Profesional1": {
+      "main": [
+        [
+          {
+            "node": "Error Exsite",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Exsite": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d517ae0c-6db4-4828-a0c3-b2601b483f3e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d051716d31b47e82869244b00323064210b99143f3d8d00d35d6b51296b9d2e4"
+  },
+  "id": "vlKJrDta3amJe4uF",
+  "tags": [
+    {
+      "createdAt": "2025-05-20T07:01:25.686Z",
+      "updatedAt": "2025-05-20T07:01:25.686Z",
+      "id": "duJ951xsaFzMxE5Z",
+      "name": "Reservas_Citas_V2"
+    }
+  ]
+}

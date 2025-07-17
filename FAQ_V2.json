@@ -1,0 +1,225 @@
+{
+  "name": "FAQ V2",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -580,
+        80
+      ],
+      "id": "d26248fd-a188-4003-a37d-fa3cfba48685",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "af5f7a03-e4c8-4dd4-b9c6-5ec8b26383d9",
+              "name": "duda",
+              "value": "={{ $json.duda }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -40,
+        -100
+      ],
+      "id": "0e153be5-b60d-4d6a-bf86-0a693d134bc3",
+      "name": "Datos Flujo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7b096ed5-73d7-4175-b4fb-230bf251ea0b",
+              "name": "duda",
+              "value": "¿Que servicios ofreceis? ¿A que precios?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -280,
+        80
+      ],
+      "id": "e8293557-39ae-4c86-9dfd-379a4fa691c2",
+      "name": "Datos Demo"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.duda }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainRetrievalQa",
+      "typeVersion": 1.5,
+      "position": [
+        180,
+        -100
+      ],
+      "id": "b8c9c4bd-0f75-4b05-88f3-f5d2c73f057e",
+      "name": "Question and Answer Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        140,
+        -260
+      ],
+      "id": "c6158211-c3d3-452a-90c2-7c201923592f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "zakv3aiGrrBGEeC3",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "Q7An45ReEs4vDlIl",
+          "mode": "list",
+          "cachedResultName": "FAQ Retriever V2"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.retrieverWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        300,
+        -260
+      ],
+      "id": "cfa6914c-5624-4ecd-afae-f76542d1e6b1",
+      "name": "Workflow Retriever"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "duda"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -500,
+        -240
+      ],
+      "id": "a1294887-94e0-4699-b34e-ece21d91a493",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Datos Demo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos Demo": {
+      "main": [
+        [
+          {
+            "node": "Datos Flujo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos Flujo": {
+      "main": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Retriever": {
+      "ai_retriever": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_retriever",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Datos Flujo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4b00f8e3-f36d-4659-bdf1-1dcf68f7358a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d051716d31b47e82869244b00323064210b99143f3d8d00d35d6b51296b9d2e4"
+  },
+  "id": "OxIL0ED7Tsh4jmmp",
+  "tags": [
+    {
+      "createdAt": "2025-05-20T07:01:25.686Z",
+      "updatedAt": "2025-05-20T07:01:25.686Z",
+      "id": "duJ951xsaFzMxE5Z",
+      "name": "Reservas_Citas_V2"
+    }
+  ]
+}
