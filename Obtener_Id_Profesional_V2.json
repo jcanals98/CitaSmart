@@ -1,0 +1,159 @@
+{
+  "name": "Obtener_Id_Profesional V2",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "profesional"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -720,
+        -160
+      ],
+      "id": "7e5638bc-de89-4947-9997-4e8f3c4a45ce",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "const calendarioProfesionales = {\n  \"Anna\": \"510264bb771458e9a3ef1d9fe25e3c35ea6e91993bb79ec0b9fb3d8c47c4bb4d@group.calendar.google.com\",\n  \"Pedro\": \"7e5ed1954fdc01773575c32b6f534129c2cba259d3347a666c13d4ca7517262b@group.calendar.google.com\",\n  \"Sara\": \"017d096ba0b356b8db8f7e5e1fd79fd7a7350ba4c7b95246d3f64c4a03bf1ebb@group.calendar.google.com\",\n  \"Sonia Garcia\": \"827c073d820d6c87852d4f0167224eb03141f55e9ba8b5c2e96a3b5860a1a41f@group.calendar.google.com\"\n  // Añade más según los nombres que use tu agente\n};\n\n//const profesional = $input.first().json.profesional || \"Anna\"; \n//const calendarId = calendarioProfesionales[profesional];\n\n//return [{ calendarId }];\n\nconst profesionales = Object.keys(calendarioProfesionales);\nconst input = $json.profesional?.trim().toLowerCase();\n\nif (!input) {\n  return [{\n    json: {\n      error: \"No se ha proporcionado ningún nombre.\",\n      disponibles: profesionales\n    }\n  }];\n}\n\n// Buscar coincidencia exacta (insensible a mayúsculas)\nconst nombreCoincidente = profesionales.find(\n  p => p.toLowerCase() === input\n);\n\nif (!nombreCoincidente) {\n  return [{\n    json: {\n      error: `El profesional \"${$json.profesional}\" no está registrado.`,\n      disponibles: profesionales\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    calendarId: calendarioProfesionales[nombreCoincidente],\n    profesional: nombreCoincidente\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -280,
+        -260
+      ],
+      "id": "49100584-f16a-4d42-a5ea-2c4bd24e09f4",
+      "name": "Diccionario calendarios"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -940,
+        -360
+      ],
+      "id": "4f97a6d4-8c0a-426b-a78c-cc259b2180b2",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "542581af-1fc9-4f86-b40f-00abf12501c8",
+              "name": "profesional",
+              "value": "Pedro V2h",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -720,
+        -360
+      ],
+      "id": "2aa7c417-3768-4dc8-b2c7-5e52882c48cc",
+      "name": "Datos Demo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "96e74845-ab3b-4f86-9e86-56df5d6a6779",
+              "name": "profesional",
+              "value": "={{ $json.profesional }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -500,
+        -260
+      ],
+      "id": "e65d2cd0-5f2e-49a2-850d-acdb93868ebb",
+      "name": "Datos Flujo"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Datos Flujo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Datos Demo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos Demo": {
+      "main": [
+        [
+          {
+            "node": "Datos Flujo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos Flujo": {
+      "main": [
+        [
+          {
+            "node": "Diccionario calendarios",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "95a9350a-293d-4e69-a2f2-8ff5f0361fbf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d051716d31b47e82869244b00323064210b99143f3d8d00d35d6b51296b9d2e4"
+  },
+  "id": "vjPXXPvk6cQVuEJy",
+  "tags": [
+    {
+      "createdAt": "2025-05-20T07:01:25.686Z",
+      "updatedAt": "2025-05-20T07:01:25.686Z",
+      "id": "duJ951xsaFzMxE5Z",
+      "name": "Reservas_Citas_V2"
+    }
+  ]
+}
