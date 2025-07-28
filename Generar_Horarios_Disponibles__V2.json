@@ -19,7 +19,7 @@
       "name": "When Executed by Another Workflow",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "position": [
-        -120,
+        200,
         220
       ]
     },
@@ -28,8 +28,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -120,
-        480
+        -60,
+        400
       ],
       "id": "1411d367-aaf5-4821-8287-2fa76f7a5fba",
       "name": "When clicking ‘Test workflow’"
@@ -43,7 +43,7 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        860,
+        1040,
         340
       ],
       "id": "3ac68530-8355-4481-90d4-35e7346855d3",
@@ -65,8 +65,8 @@
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
       "position": [
-        1660,
-        240
+        1940,
+        320
       ],
       "id": "8574e9ac-fceb-42d6-a317-84e86e73771e",
       "name": "Aggregate"
@@ -99,7 +99,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1380,
+        1560,
         340
       ],
       "id": "153a3e38-1e9e-4e0f-a1dc-c3b9e922eb3c",
@@ -159,7 +159,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        1160,
+        1360,
         340
       ],
       "id": "9510950f-2fdc-4c49-8be6-a94bbd7d4acf",
@@ -188,8 +188,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        100,
-        480
+        200,
+        400
       ],
       "id": "3ef17c8a-f40d-4907-906c-e038393d0bfe",
       "name": "Datos Demo"
@@ -223,11 +223,89 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        560,
+        640,
         340
       ],
       "id": "e81f91b2-6b0e-4259-b55e-e18cba80c0e3",
       "name": "Listado horas + Datos Flujo"
+    },
+    {
+      "parameters": {
+        "content": "## 🎯 Activación por otro flujo\n\nEste flujo se activa desde otro workflow (como Asistente_Principal_V2).\n\nRecibe como entrada:\n- fecha (obligatoria)\n- profesional (opcional)",
+        "height": 500,
+        "width": 620,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        100
+      ],
+      "id": "6f6827a3-de27-4ebd-a2d3-87912e5faded",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 🕒 Generar franjas horarias\nCrea una lista de 10 horas posibles entre las 09:00 y las 18:00.\nA cada hora se le asigna la fecha y el profesional recibido como entrada.",
+        "height": 500,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        520,
+        100
+      ],
+      "id": "a65fcbf3-6e2b-42f2-9026-4971fc1ee10d",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 🔄 Split Out por franja horaria\nSe separa cada hora como un ítem individual para procesarlas una por una.\n\n",
+        "height": 500,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        960,
+        100
+      ],
+      "id": "d4248d0e-53b2-4513-b3b4-1f48ab1297f2",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## ✅ Filtrar solo disponibles\nSolo se conservan las horas donde disponible === true.\nSe descartan las ocupadas.",
+        "height": 500,
+        "width": 420,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        100
+      ],
+      "id": "e3d2c716-3011-4f4c-af8e-bd513c9aee0d",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## 📦 Generar array de horas disponibles\nSe agrupan todas las horas disponibles en un único campo llamado disponibles.\n\n",
+        "height": 500,
+        "width": 300,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        100
+      ],
+      "id": "33014967-9787-45c0-9e87-c4e36b930b1c",
+      "name": "Sticky Note4"
     }
   ],
   "pinData": {},
@@ -314,7 +392,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "a8c7ef7a-67b7-4af6-af22-c0c6bce292b5",
+  "versionId": "fc420fd7-aa0c-40d3-9e07-751edd8ae9e9",
   "meta": {
     "instanceId": "d051716d31b47e82869244b00323064210b99143f3d8d00d35d6b51296b9d2e4"
   },

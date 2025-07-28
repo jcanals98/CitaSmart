@@ -1,0 +1,257 @@
+{
+  "name": "Info_Centro_Retriever V2",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1020,
+        -200
+      ],
+      "id": "bde5e4a8-f82c-499f-b057-b0ba6a81a7a2",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "duda"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -800,
+        0
+      ],
+      "id": "571c9654-6c56-4fcf-ac9c-66a63eac87be",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = [];\nconst query = $('Datos Flujo').first().json.duda?.toLowerCase().normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\").replace(/[^\\w\\s]/gi, '') || '';\n\nconsole.log(\"Query:\", query);  // Afegeix això\n\nif (!query) {\n  return [];\n}\n\nconst words = query.split(\" \");\nconsole.log(\"Words:\", words);  // Afegeix això\n\nfor (const item of items) {\n  const pregunta = item.json.Pregunta?.toLowerCase().normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") || '';\n  const respuesta = item.json.Respuesta?.toLowerCase().normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") || '';\n\n  let match = false;\n\n  for (const word of words) {\n    if (pregunta.includes(word) || respuesta.includes(word)) {\n      match = true;\n      break;\n    }\n  }\n\n  if (match) {\n    result.push({\n      json: {\n        page_content: `Pregunta: ${item.json.Pregunta}\\nRespuesta: ${item.json.Respuesta}`,\n        metadata: {\n          source: \"Base_Conocimientos\",\n          row: item.json.row_number,\n          pregunta: item.json.Pregunta\n        }\n      }\n    });\n  }\n}\n\nreturn result;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        380,
+        -100
+      ],
+      "id": "47cf956e-f77d-4a45-b719-492b510bf0ca",
+      "name": "Formatear en lista",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "681c6164-3d66-47e8-bf5f-2c6a9c15c6e8",
+              "name": "duda",
+              "value": "Pilates",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -800,
+        -200
+      ],
+      "id": "22b38c9e-b38a-42e0-b425-6c6c50de60fc",
+      "name": "Datos Demo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a96ae335-7257-4804-b7eb-ce7b2fa36ef8",
+              "name": "duda",
+              "value": "={{ $json.duda }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -560,
+        -100
+      ],
+      "id": "e43a7465-1a01-46f2-8fd9-7821fcad9f00",
+      "name": "Datos Flujo"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "13TG6T8t5jPWDsLS8Gikc-TFbRenbt5-IV3PB-cADCNk",
+          "mode": "list",
+          "cachedResultName": "Asistente V2 FAQ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13TG6T8t5jPWDsLS8Gikc-TFbRenbt5-IV3PB-cADCNk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 483095666,
+          "mode": "list",
+          "cachedResultName": "Datos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13TG6T8t5jPWDsLS8Gikc-TFbRenbt5-IV3PB-cADCNk/edit#gid=483095666"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -140,
+        -100
+      ],
+      "id": "4df81a1e-4d7a-467b-a2e4-76df11d3c708",
+      "name": "Asistente V2 FAQ",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GWmgOluWQHomzu6V",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Entrada del flujo \nRecibe los datos (duda) ya sea desde una prueba manual o como subflujo.\nPrepara el texto para ser procesado en los siguientes pasos.",
+        "height": 540,
+        "width": 660,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1060,
+        -360
+      ],
+      "id": "6c4f6484-7d7a-4434-a6fd-e90906af3a3e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Base de conocimiento (Google Sheet)\nLee todas las preguntas y respuestas de la pestaña Datos.\nSirve como fuente para buscar coincidencias relevantes.",
+        "height": 540,
+        "width": 340,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        -360
+      ],
+      "id": "fd5bb179-82fa-4493-bcca-44d2d9212723",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Filtrado y formato\nCompara la duda con la base de conocimiento y devuelve coincidencias estructuradas (page_content + metadata).",
+        "height": 540,
+        "width": 420,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        220,
+        -360
+      ],
+      "id": "4bd9e237-6605-48c1-ad87-f27b8808a6a4",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Datos Demo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Datos Flujo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos Demo": {
+      "main": [
+        [
+          {
+            "node": "Datos Flujo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos Flujo": {
+      "main": [
+        [
+          {
+            "node": "Asistente V2 FAQ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatear en lista": {
+      "main": [
+        []
+      ]
+    },
+    "Asistente V2 FAQ": {
+      "main": [
+        [
+          {
+            "node": "Formatear en lista",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "cac3fd52-82ce-406b-9fb0-5abde291fcc2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d051716d31b47e82869244b00323064210b99143f3d8d00d35d6b51296b9d2e4"
+  },
+  "id": "Q7An45ReEs4vDlIl",
+  "tags": [
+    {
+      "createdAt": "2025-05-20T07:01:25.686Z",
+      "updatedAt": "2025-05-20T07:01:25.686Z",
+      "id": "duJ951xsaFzMxE5Z",
+      "name": "Reservas_Citas_V2"
+    }
+  ]
+}

@@ -13,8 +13,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        260,
-        -480
+        840,
+        -660
       ],
       "id": "a12c3df9-3185-4fba-91f4-046ebaf34a41",
       "name": "OpenAI Chat Model",
@@ -30,14 +30,14 @@
         "promptType": "define",
         "text": "={{ $json.message_text }}",
         "options": {
-          "systemMessage": "=Reglas generales\n\n- Si el usuario menciona el nombre de un fisioterapeuta, debes tenerlo en cuenta en todas las acciones.\n- Si el usuario no menciona ningún profesional, pregúntale con quién desea la cita antes de continuar.\n- Nunca tomes ninguna acción sin que el usuario lo confirme claramente.\n- Todas las citas tienen una duración fija de 1 hora. Al consultar o crear una cita, asume siempre que la franja completa es de una hora.\n- Elige siempre la acción adecuada en base a lo que dice el usuario, pero responde de forma natural y clara.\n- Siempre que te pidan la disponibilidad en hora, día o profesional, o una combinación, debes hacer las comprobaciones y no suponer nada.\n- Antes de crear, consultar, modificar o cancelar citas, llama siempre a la herramienta Gestion_Clientes para obtener los datos actuales del cliente.\n\nUso de Gestion_Clientes\n\n- Cuando alguien envíe un mensaje, revisa si su ClienteID ya está registrado en la base de datos con un nombre_cliente.\n  - Si está registrado, usa siempre su nombre_cliente guardado para saludarlo y responderle. Ejemplo: “Hola [nombre_cliente], ¿en qué puedo ayudarte?”\n  - Si no está registrado, no guardes nada en la base de datos todavía y habla normalmente sin pedir datos personales.\n  - Solo cuando el usuario quiera crear, modificar, cancelar o consultar una cita, pide su nombre_cliente, teléfono y email y guarda estos datos completos en la base de datos antes de realizar la acción.\n- El nombre_cliente, teléfono y email son obligatorios para crear un nuevo cliente. Nunca guardes un cliente en la base de datos si no tienes los tres datos completos.\n- Si ya tenemos al cliente registrado en la base de datos, nunca le pidas de nuevo sus datos personales. Usa siempre la información guardada y pídele solo una confirmación antes de realizar la acción.\n- Si el usuario solicita ver sus datos personales o quiere modificarlos, muéstralos o actualízalos según lo pida.\n- El chat_id es un identificador interno de la base de datos y nunca debe mostrarse ni mencionarse al usuario.\n- Por defecto, envía el campo modificar como false.\n- Si el usuario dice explícitamente que quiere cambiar sus datos personales como nombre_cliente, teléfono o email, entonces envía modificar como true y solicita los nuevos datos.\n- Nota: nombre_cliente se refiere siempre al nombre del usuario con el que estás conversando, no al nombre del profesional que lo atenderá. El asistente nunca debe inventar un nombre_cliente si no existe en la base de datos.\n\nLógica de decisión\n1. Si el usuario indica fecha, hora y fisioterapeuta:\n- Comprueba disponibilidad.\n- Si está disponible responde: “La franja horaria con [nombre del profesional] está disponible. ¿Deseas que te agende la cita?”\n- Si está ocupada responde: “Lo siento, ese horario con [nombre del profesional] ya está reservado.”\n\n2. Si el usuario da solo la fecha y menciona al profesional:\n- Consulta todos los horarios disponibles para ese día con ese profesional.\n- Responde con: “Estos son los horarios disponibles con [nombre del profesional] para ese día: 09:00, 10:00, 11:30…”\n\n3. Si el usuario confirma que quiere una cita en una franja disponible:\n- Agenda la cita usando los datos que tengas en la base de datos.\n- Si falta algún dato, solicita al usuario el nombre, teléfono o email antes de continuar.\n- Confirma con: “Tu cita con [nombre del profesional] ha sido agendada correctamente para el [fecha] a las [hora].”\n\n4. Si el usuario quiere cancelar una cita:\n- Asegúrate de que indica la fecha, hora y el profesional de la cita.\n- Identifica al usuario únicamente con su ClienteID desde la base de datos.\n- Si la cita existe y pertenece a ese ClienteID, responde: “Tu cita ha sido cancelada correctamente.”\n- Si no se encuentra ninguna cita para su ClienteID, responde: “No hemos encontrado ninguna cita asociada. ¿Quieres que revise otras fechas o profesionales?”\n\n5. Si el usuario quiere modificar una cita existente:\n- Asegúrate de que indica la fecha y hora actuales de su cita, y también la nueva fecha y hora deseadas, junto con el profesional.\n- Identifica al usuario únicamente con su ClienteID desde la base de datos.\n- Comprueba si la nueva franja horaria está libre.\n- Si está libre responde: “Ese nuevo horario con [nombre del profesional] está disponible. ¿Quieres modificar tu cita actual?”\n- Si el usuario lo confirma, realiza el cambio y responde: “Tu cita ha sido actualizada correctamente.”\n- Si el nuevo horario está ocupado responde: “Esa franja horaria ya está reservada. ¿Quieres que te proponga otros horarios con [nombre del profesional]?”\n\n6. Contexto de fecha actual\n- Hoy es: {{ $now }}\n- Esta fecha debe usarse como referencia absoluta para cualquier acción o respuesta.\n- Si el usuario dice “hoy”, “mañana” o “pasado mañana”, debes calcular la fecha real correspondiente comparando con la fecha actual.\n- Nunca asumas que \"hoy\" es una fecha fija. Trabaja siempre en base a la fecha actual proporcionada por el sistema.\n\n7. Uso de la herramienta FAQ para preguntas informativas o genéricas\n\n- Si la intención del usuario es reservar, cancelar, modificar o consultar citas, aplica la lógica normal para gestionar la cita.\n- Si el usuario hace una pregunta informativa o general (como precios, ubicación, servicios, horarios, qué profesionales trabajan, etc.), utiliza siempre la herramienta llamada FAQ.\n- Pasa la pregunta del usuario tal como la ha formulado a la herramienta FAQ para buscar la respuesta.\n- Si la FAQ contiene la respuesta, devuélvela directamente al usuario de forma clara y natural.\n- Si la FAQ no tiene una respuesta para la pregunta, responde de forma neutra:\n“No dispongo de esa información en este momento. ¿Quiere que le ponga en contacto con el centro para resolver su duda?”\n- Nunca inventes información para preguntas generales. Solo debes responder lo que está en la FAQ o informar al usuario de que no se encuentra la respuesta.\n- Ejemplo\n  Usuario: ¿Trabajáis los sábados?\n  Acción: Usa la herramienta FAQ con la pregunta “¿Trabajáis los sábados?”\n- Si la FAQ no tiene esa información responde: “No dispongo de esa información en este momento. ¿Quiere que le ponga en contacto con el centro?”"
+          "systemMessage": "=Reglas generales\n- Si el usuario está registrado (ClienteID existe en la base de datos):\n  - Saluda usando su nombre_cliente. Ejemplo:\n    “Hola [nombre_cliente], ¿en qué puedo ayudarte hoy?”\n- Si el usuario NO está registrado:\n  - Saluda de forma genérica sin pedir datos. Ejemplo:\n    “Hola, ¿en qué puedo ayudarte?”\n\n- Nunca pidas datos personales (nombre, teléfono, email) salvo que el usuario quiera crear una cita.\n- Siempre que te pidan información sobre servicios, precios, profesionales, horarios, ubicación o métodos de pago:\n  - Consulta la herramienta Info_Centro.\n  - Devuelve la información encontrada de forma clara y natural.\n  - Si Info_Centro no tiene la respuesta:\n    “No dispongo de esa información en este momento. ¿Quieres que te ponga en contacto con el centro para resolver tu duda?”\n\n- Antes de crear, modificar, cancelar o consultar citas, consulta la herramienta Gestion_Clientes para obtener los datos actuales del cliente.\n\nUso de Gestion_Clientes\n- Solo cuando el usuario quiera crear una cita:\n  - Si ClienteID existe en la base de datos:\n    - Usa los datos guardados (nombre_cliente, teléfono, email).\n  - Si ClienteID NO existe:\n    - Pide los siguientes datos:\n      - Nombre\n      - Teléfono\n      - Email\n    - Guarda estos datos en la base de datos antes de continuar con la reserva.\n\n- Si el usuario solicita ver o modificar sus datos personales:\n  - Muéstralos o actualízalos según corresponda.\n\n- El chat_id es un identificador interno y nunca debe mostrarse ni mencionarse al usuario.\n\n- Por defecto, el campo modificar se envía como false.\n- Si el usuario pide explícitamente cambiar sus datos personales, envía modificar como true.\n\nLógica de gestión de citas\n\n1. Crear cita\n- Preguntar:\n  - ¿Qué servicio desea reservar?\n  - ¿Con qué fisioterapeuta?\n  - ¿Para qué día y hora?\n\n- Si el usuario NO menciona un fisioterapeuta:\n  - Consulta Info_Centro para ver quién ofrece el servicio.\n  - Responde:\n    “Estos son los fisioterapeutas que ofrecen [servicio]: Anna, Pedro, Sara. ¿Con cuál quieres la cita?”\n\n- Verificar disponibilidad en calendario:\n  - Si disponible:\n    “La franja horaria está disponible. ¿Deseas que te agende la cita?”\n  - Si NO disponible:\n    “Ese horario no está disponible. ¿Quieres que te proponga otras opciones?”\n\n2. Modificar cita\n- Verificar si hay citas asociadas a ClienteID:\n  - Si sí:\n    - Preguntar nueva fecha y hora deseadas.\n    - Verificar disponibilidad.\n    - Confirmar la modificación.\n  - Si no:\n    “No he encontrado ninguna cita asociada a tu perfil.”\n\n3. Cancelar cita\n- Verificar si hay citas asociadas a ClienteID:\n  - Si sí:\n    - Confirmar la cancelación.\n  - Si no:\n    “No he encontrado ninguna cita asociada a tu perfil.”\n\n4. Obtener citas (recordar citas)\n- Si el usuario pregunta sobre sus citas (futuras o pasadas):\n  - Consulta en la base de datos todas las citas asociadas a su ClienteID.\n  - Si hay citas futuras:\n    - Listar las citas encontradas de forma clara y ordenada.\n    - Ejemplo:\n      “Tienes las siguientes citas:\n      - Viernes 26 de julio a las 10:00 con Anna (Pilates)\n      - Lunes 29 de julio a las 15:00 con Pedro (Osteopatía)”\n  - Si no hay citas:\n    “No he encontrado ninguna cita asociada a tu perfil.”\n  - Si el usuario pregunta por un día específico:\n    - Filtrar las citas para ese día y responder si hay o no citas en esa fecha.\n\nContexto de fecha actual\n- Hoy es: {{ $now }}\n- Si el usuario dice “hoy”, “mañana” o “pasado mañana”:\n  - Traducir a la fecha real comparando con la fecha actual.\n\nUso de Info_Centro para preguntas generales\n- Siempre que el usuario haga preguntas generales (no relacionadas con reservas) usa Info_Centro para obtener la respuesta.\n- Ejemplo:\n  Usuario: “¿Quién ofrece pilates?”\n  Asistente: “Anna es especialista en pilates y atiende de lunes a viernes de 9:00 a 17:00.”\n\n- Nunca inventes información.\n- Si no encuentras la respuesta:\n  “No dispongo de esa información en este momento. ¿Quieres que te ponga en contacto con el centro?”\n"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
       "position": [
-        260,
-        -280
+        860,
+        -500
       ],
       "id": "c7179f4e-358e-43bb-af19-1774c6986478",
       "name": "AI Agent"
@@ -99,8 +99,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        0,
-        -40
+        560,
+        -100
       ],
       "id": "d5342f71-0005-4d89-9595-26a7451ba56f",
       "name": "Verificar_Disponibilidad"
@@ -153,8 +153,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        180,
-        -40
+        740,
+        -100
       ],
       "id": "f282174d-8cb6-44fa-8bca-c01ef515fede",
       "name": "Generar_Horarios_Disponibles"
@@ -260,8 +260,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        360,
-        -20
+        880,
+        -100
       ],
       "id": "a1733225-e004-48a0-8f79-aa969b36a3d8",
       "name": "Crear_Evento"
@@ -345,8 +345,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        480,
-        0
+        1000,
+        -100
       ],
       "id": "4a430b44-f142-4148-9aa6-bc1cb451a99d",
       "name": "Cancelar_Cita"
@@ -463,8 +463,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2,
       "position": [
-        640,
-        0
+        1120,
+        -100
       ],
       "id": "e8f2c5a4-5fed-4683-bae9-b63cf4b839c7",
       "name": "Modificar_Cita"
@@ -506,53 +506,11 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.1,
       "position": [
-        800,
-        -60
+        1240,
+        -100
       ],
       "id": "b24c7f77-eeb4-4925-845f-35a37f5b28c9",
       "name": "Obtener_Citas"
-    },
-    {
-      "parameters": {
-        "description": "Úsala solo cuando el usuario quiera información sobre el centro o sobre alguna consulta\n",
-        "workflowId": {
-          "__rl": true,
-          "value": "OxIL0ED7Tsh4jmmp",
-          "mode": "list",
-          "cachedResultName": "FAQ V2"
-        },
-        "workflowInputs": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "duda": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('duda', ``, 'string') }}"
-          },
-          "matchingColumns": [
-            "duda"
-          ],
-          "schema": [
-            {
-              "id": "duda",
-              "displayName": "duda",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "canBeUsedToMatch": true,
-              "type": "string",
-              "removed": false
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
-      "typeVersion": 2.2,
-      "position": [
-        1020,
-        -40
-      ],
-      "id": "6b023268-8c24-479b-975a-cb876a2531b9",
-      "name": "FAQ"
     },
     {
       "parameters": {
@@ -565,8 +523,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        860,
-        -280
+        1480,
+        -500
       ],
       "id": "8a4d740a-4907-4399-bb93-5c5bf30cd20a",
       "name": "Send a text message",
@@ -601,8 +559,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -20,
-        -280
+        460,
+        -500
       ],
       "id": "d59b1974-ce47-4f59-955d-ce3b788116db",
       "name": "Datos"
@@ -617,8 +575,8 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.1,
       "position": [
-        -340,
-        -280
+        240,
+        -500
       ],
       "id": "ec008aad-2538-4ad9-85e3-21607e97b793",
       "name": "JosepBot",
@@ -708,24 +666,11 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
       "position": [
-        1220,
-        -60
+        1380,
+        -100
       ],
       "id": "b5aa8709-9a4d-452a-be22-6764b73f9154",
       "name": "Gestion_Clientes"
-    },
-    {
-      "parameters": {
-        "content": "{{ $('Datos').item.json.chat_id }}"
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        660,
-        -560
-      ],
-      "id": "62e7f77b-66eb-464a-b2b6-59886eba49d5",
-      "name": "Sticky Note"
     },
     {
       "parameters": {
@@ -735,11 +680,117 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        480,
-        -500
+        1040,
+        -660
       ],
       "id": "6dc8b7d6-4593-4113-ba78-dce20a719e45",
       "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "description": "Úsala solo cuando el usuario quiera información sobre el centro o sobre alguna consulta\n",
+        "workflowId": {
+          "__rl": true,
+          "value": "OxIL0ED7Tsh4jmmp",
+          "mode": "list",
+          "cachedResultName": "Infor_Centro V2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "duda": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('duda', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "duda"
+          ],
+          "schema": [
+            {
+              "id": "duda",
+              "displayName": "duda",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1500,
+        -100
+      ],
+      "id": "6b023268-8c24-479b-975a-cb876a2531b9",
+      "name": "Info_Centro"
+    },
+    {
+      "parameters": {
+        "content": "## 📨 Entrada de mensaje del usuario\nRecibe el mensaje desde Telegram a través del Webhook.\nExtrae el número de teléfono y el texto del usuario, que se envía al agente de IA para determinar la intención.",
+        "height": 340,
+        "width": 440,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        180,
+        -640
+      ],
+      "id": "95ca4625-369d-402f-89c2-3439c84bc9c5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 🧠 Determinar intención del usuario\nEl agente GPT analiza el mensaje y clasifica la intención\n\nDevuelve un objeto con intención, parámetros y mensaje a mostrar.",
+        "height": 480,
+        "width": 520,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        720,
+        -820
+      ],
+      "id": "2e5de115-ac55-46aa-a020-e7f84ae6bd98",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n## 🛣️ Redirigir según intención\nSegún la intención detectada, se redirige a uno de los subflujos correspondientes",
+        "height": 400,
+        "width": 1200,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        480,
+        -240
+      ],
+      "id": "bc135b84-7fe7-4493-8721-d9a1876a0e9a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## 📤 Responder por Telegram\nSe envía al usuario la respuesta generada por el subflujo o por el agente.\nEjemplo: confirmación, error, mensaje de ayuda o texto generado por el asistente.",
+        "height": 300,
+        "width": 440,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        -640
+      ],
+      "id": "29f4728c-90a3-466d-9bd4-cb6565ddbebe",
+      "name": "Sticky Note3"
     }
   ],
   "pinData": {},
@@ -832,17 +883,6 @@
         ]
       ]
     },
-    "FAQ": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Datos": {
       "main": [
         [
@@ -886,13 +926,24 @@
           }
         ]
       ]
+    },
+    "Info_Centro": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "fbd784ed-3722-4815-935d-23afa48e5ff4",
+  "versionId": "79284f97-6162-4384-b733-cd70a880192d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d051716d31b47e82869244b00323064210b99143f3d8d00d35d6b51296b9d2e4"

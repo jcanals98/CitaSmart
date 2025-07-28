@@ -17,7 +17,7 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "position": [
         -120,
-        360
+        320
       ]
     },
     {
@@ -25,8 +25,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -260,
-        600
+        -320,
+        520
       ],
       "id": "5f8ce090-3fff-4a92-a8dc-f1620f592f18",
       "name": "When clicking ‘Test workflow’"
@@ -38,8 +38,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        540,
-        480
+        460,
+        400
       ],
       "id": "3344ffed-eff1-441f-be99-dfcbd30d5031",
       "name": "Profesionales + CalendarId"
@@ -51,8 +51,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        820,
-        480
+        920,
+        400
       ],
       "id": "5b78298a-cc2a-435c-9173-fd0dbfc55175",
       "name": "Loop Over Items"
@@ -71,8 +71,8 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        1160,
-        500
+        1380,
+        420
       ],
       "id": "8984f509-512f-463b-9b05-b1c977a73572",
       "name": "Google Calendar1",
@@ -101,8 +101,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -60,
-        600
+        -120,
+        520
       ],
       "id": "4381b9e3-45d1-4e8b-be77-40328441fecb",
       "name": "Datos Demo"
@@ -114,8 +114,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1480,
-        500
+        1760,
+        420
       ],
       "id": "c1fb176a-0897-4739-8a0d-463a5e70aa0a",
       "name": "Agrupar + Filtrar por teléfono"
@@ -137,11 +137,89 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        260,
-        480
+        120,
+        400
       ],
       "id": "3122bca2-8476-469c-add8-bbafc3a28769",
       "name": "Datos"
+    },
+    {
+      "parameters": {
+        "content": "## 📥 Parámetro recibido\n- telefono (del cliente que solicita ver sus citas).\n\n",
+        "height": 480,
+        "width": 680,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        220
+      ],
+      "id": "5e9c4649-a18f-484b-b7c4-06a5abc0f93e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 👥 Lista de profesionales\nCrea una lista con los nombres y calendarId de los profesionales.\nSe usará para consultar sus eventos.",
+        "height": 480,
+        "width": 460
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        320,
+        220
+      ],
+      "id": "2466ab09-7967-4854-b657-b1a5293e6a22",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 🔁 Bucle por profesional\nUsa Loop Over Items para iterar sobre cada calendarId y consultar sus eventos futuros.\n\nDevuelve una lista con las citas del cliente:\n- ID del evento\n- Profesional\n- Fecha/hora de inicio y fin\n\n",
+        "height": 640,
+        "width": 1400,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        880,
+        60
+      ],
+      "id": "d7dfdcb6-4548-4d75-b29a-aad5ef568151",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## 📆 Buscar eventos (Google Calendar)\nConsulta eventos en los próximos 14 días para cada profesional.\nFiltra por fecha/hora actual.",
+        "height": 340,
+        "width": 440,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        220
+      ],
+      "id": "4fa8a50c-ca2a-499c-bc7a-31709edbfa5d",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## 📞 Citas del cliente\n\nRevisa la descripción de cada evento y se queda solo con los que contienen el número de teléfono del cliente.",
+        "height": 360,
+        "width": 480
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1660,
+        220
+      ],
+      "id": "30f1ca16-f12e-45f8-983d-afe6de33f4c6",
+      "name": "Sticky Note4"
     }
   ],
   "pinData": {},
@@ -240,7 +318,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "240facaf-1e94-4bef-823b-b1a36ed35b68",
+  "versionId": "f3b6cf69-c8ee-4bb0-aa74-3c82167070f3",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d051716d31b47e82869244b00323064210b99143f3d8d00d35d6b51296b9d2e4"

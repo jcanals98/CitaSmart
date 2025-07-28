@@ -7,7 +7,7 @@
       "typeVersion": 1,
       "position": [
         -1060,
-        -640
+        -620
       ],
       "id": "a5776bea-7f0e-4252-b7ef-658e6b16a177",
       "name": "When clicking ‘Test workflow’"
@@ -53,8 +53,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -840,
-        -540
+        -820,
+        -620
       ],
       "id": "90ed2eeb-b5f3-4635-9fdc-dc12d38acbef",
       "name": "Datos Demo"
@@ -100,8 +100,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -620,
-        -460
+        -560,
+        -720
       ],
       "id": "fb91a805-ae48-4ca8-aa7d-5aa33464fe81",
       "name": "Datos"
@@ -135,8 +135,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        220,
-        -340
+        240,
+        -380
       ],
       "id": "b216f541-e233-40f8-bba2-f646b89dcbae",
       "name": "Get ClientID",
@@ -165,8 +165,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1460,
-        -140
+        1440,
+        80
       ],
       "id": "8a0526d4-dde9-4895-bf53-274e257e5b3d",
       "name": "Respuesta Crear Cliente"
@@ -248,8 +248,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        1140,
-        -140
+        1000,
+        40
       ],
       "id": "2a8b86dd-a576-4263-93e8-977baccd7bee",
       "name": "Crear Cliente",
@@ -288,8 +288,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        620,
-        -340
+        540,
+        -380
       ],
       "id": "e5a8896b-5b37-46d9-ad94-5df19b2b5c00",
       "name": "ClientID existe"
@@ -329,8 +329,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1020,
-        -420
+        820,
+        -400
       ],
       "id": "49d48ebb-4583-4bac-a736-0f5773ff6efd",
       "name": "Respuesta"
@@ -363,8 +363,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -400,
-        -460
+        -300,
+        -720
       ],
       "id": "41d93b89-3e18-4596-a173-be64d8cb53e0",
       "name": "Modificar"
@@ -444,8 +444,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        380,
-        -640
+        540,
+        -740
       ],
       "id": "1a925636-2ff9-4bd4-bfc9-74fd5157cbac",
       "name": "Modificar Datos",
@@ -473,8 +473,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        660,
-        -640
+        820,
+        -740
       ],
       "id": "d827323a-d12a-48f4-a63a-f7b371219b2f",
       "name": "Respuesta Modificar"
@@ -508,8 +508,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        80,
-        -640
+        280,
+        -740
       ],
       "id": "30a4757f-4c9d-40b6-9a07-172374d8c7cf",
       "name": "Edit Fields"
@@ -539,8 +539,8 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        -1000,
-        -360
+        -820,
+        -840
       ],
       "id": "131aaa58-ebdd-4549-a65a-6be62a1a1419",
       "name": "When Executed by Another Workflow"
@@ -573,11 +573,90 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -180,
-        -360
+        -120,
+        -400
       ],
       "id": "02326cd7-8c86-4ab6-abb2-131f17c2f796",
       "name": "nombre_cliente existe"
+    },
+    {
+      "parameters": {
+        "content": "## Parámetros recibidos\nEl flujo recibe tres parámetros:\n- nombre\n- telefono\n- email",
+        "height": 480,
+        "width": 680,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1100,
+        -920
+      ],
+      "id": "138b6acd-0765-4523-becf-dae262d96f59",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 🔄 ¿Modificar cliente existente?\n-  Se comprube si el parametro modificar es True\n- Se comprueba si el nombre del cliente ya está registrado.\n- Si existe, se modifica su información (teléfono/email).\n- Si no existe, se continúa con validación por teléfono.",
+        "height": 720,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -340,
+        -920
+      ],
+      "id": "63a78d75-c695-4719-a7ed-9e84168166ea",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 🆕 Crear cliente nuevo\n- Inserta un nuevo registro con los datos recibidos.\n- Utiliza appendOrUpdate sheet para guardar en la hoja.\n- Devuelve respuesta de confirmación (Respuesta Crear Cliente).",
+        "height": 460,
+        "width": 820,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        900,
+        -140
+      ],
+      "id": "a78abbab-09be-419c-bdfc-925d4cf41c5a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## ✏️ Modificar cliente\n- Actualiza los campos del cliente con el nombre encontrado:\n- Edita los valores con Edit Fields.\n- Guarda los datos en la hoja (Modificar Datos).\n- Devuelve mensaje de confirmación con Respuesta Modificar.",
+        "height": 380,
+        "width": 880,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        180,
+        -920
+      ],
+      "id": "4516b710-3260-49e9-b746-a0d6e3afa162",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## 🚫 Cliente ya registrado\n- Si el teléfono ya existe, se aborta la creación.\n- El flujo finaliza con una respuesta informativa.",
+        "height": 300,
+        "width": 880,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        180,
+        -500
+      ],
+      "id": "5b4d1296-b668-43cd-8e02-ad7c3f37d356",
+      "name": "Sticky Note4"
     }
   ],
   "pinData": {},
@@ -723,7 +802,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "64e2153b-7ee4-4e2b-885d-530951891a23",
+  "versionId": "a31be551-c9df-46e6-88fd-6ac53748c4c0",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d051716d31b47e82869244b00323064210b99143f3d8d00d35d6b51296b9d2e4"

@@ -6,8 +6,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -100,
-        460
+        -120,
+        320
       ],
       "id": "c4bafbc9-3caf-4f2e-ae9f-96b0a313fe9e",
       "name": "When clicking ‘Test workflow’"
@@ -66,7 +66,7 @@
       "typeVersion": 3.4,
       "position": [
         400,
-        100
+        120
       ],
       "id": "424146ca-d8a7-4203-8c85-421f738d1a39",
       "name": "Formato datos"
@@ -104,8 +104,8 @@
       "name": "Inputs",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "position": [
-        140,
-        100
+        20,
+        120
       ]
     },
     {
@@ -161,8 +161,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        800,
-        260
+        640,
+        220
       ],
       "id": "5558b0f2-a4df-4c58-900b-5c724914570f",
       "name": "Datos Flujo"
@@ -214,8 +214,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        160,
-        460
+        140,
+        320
       ],
       "id": "d506d40b-9bce-4f1b-a881-c73c50223b31",
       "name": "Datos Demo 1"
@@ -268,44 +268,10 @@
       "typeVersion": 3.4,
       "position": [
         400,
-        460
+        320
       ],
       "id": "5f83e104-a2af-4da8-b3a4-659184e24a12",
       "name": "Datos Demo 2"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "358a98db-023f-4979-b215-a783152332c7",
-              "leftValue": "={{ $json.error }}",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "exists",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        1280,
-        200
-      ],
-      "id": "30dc54e3-41f7-4b0b-9648-953736a18b78",
-      "name": "Error Exsite"
     },
     {
       "parameters": {
@@ -344,7 +310,7 @@
       "typeVersion": 1.2,
       "position": [
         1020,
-        260
+        220
       ],
       "id": "f3ae5a3a-a2ee-43df-be70-5053e5d7edca",
       "name": "Id_Profesional1"
@@ -367,8 +333,8 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        1520,
-        320
+        1880,
+        240
       ],
       "id": "703b68de-4dc4-4d20-ab60-bcbbdd196509",
       "name": "Create an event",
@@ -378,6 +344,103 @@
           "name": "Google Calendar account"
         }
       }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "358a98db-023f-4979-b215-a783152332c7",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1420,
+        220
+      ],
+      "id": "30dc54e3-41f7-4b0b-9648-953736a18b78",
+      "name": "Error Existe"
+    },
+    {
+      "parameters": {
+        "content": "## 📨 Datos de la cita\nRecibe desde el asistente los datos necesarios para agendar:\n- Fecha\n- Hora\n- Profesional\n- Nombre del cliente\n- Teléfono\n- ID cliente",
+        "height": 600,
+        "width": 960,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        -80
+      ],
+      "id": "7cdb7fd5-a72c-4aaa-b99e-6c305aa0ec15",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 📅 ID del calendario del profesional\nLlama al subflujo Obtener_Id_Profesional_V2 para obtener el calendarId necesario.\n\n",
+        "height": 600,
+        "width": 380
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        880,
+        -80
+      ],
+      "id": "5a7c2cd8-f405-4ca1-8fb5-d291f338f3dd",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 🧪 Verificar si el ID es válido\nDespués de llamar al subflujo Obtener_Id_Profesional_V2, se usa un nodo IF llamado Error Existe para comprobar si ha habido error.\n\n- Si no hay error → continúa con la creación del evento.\n\n- Si hay error → el flujo se detiene o redirige.\n\n",
+        "height": 600,
+        "width": 360,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        -80
+      ],
+      "id": "e7f3f589-ca46-4a7d-b8ec-d506fb0976a7",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## ✅ Crear evento\nCrea el evento en el calendario del profesional con los campos:\n\n- startDateTime, endDateTime, summary, description\n\nLa descripción incluye nombre, teléfono, ID cliente y observaciones si existen.",
+        "height": 600,
+        "width": 380,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        -80
+      ],
+      "id": "984319d0-03fd-46aa-9ad6-772ba0012b53",
+      "name": "Sticky Note3"
     }
   ],
   "pinData": {},
@@ -452,14 +515,14 @@
       "main": [
         [
           {
-            "node": "Error Exsite",
+            "node": "Error Existe",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Error Exsite": {
+    "Error Existe": {
       "main": [
         [],
         [
@@ -476,7 +539,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "d517ae0c-6db4-4828-a0c3-b2601b483f3e",
+  "versionId": "86dcb12f-35e5-49c2-a11b-21b132553a12",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d051716d31b47e82869244b00323064210b99143f3d8d00d35d6b51296b9d2e4"

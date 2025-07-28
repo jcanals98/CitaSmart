@@ -6,8 +6,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        80,
-        220
+        -220,
+        920
       ],
       "id": "8137c183-65de-4c56-b92e-55012ead36dc",
       "name": "When clicking ‘Test workflow’"
@@ -40,8 +40,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        960,
-        320
+        1000,
+        980
       ],
       "id": "a86e8a29-7cb0-46b7-938a-c92a2008df13",
       "name": "Existe cita"
@@ -64,7 +64,7 @@
       "typeVersion": 3.4,
       "position": [
         1180,
-        420
+        1120
       ],
       "id": "fdce6b70-f3bc-499c-8d4e-fb12b63ed259",
       "name": "No Existe"
@@ -83,8 +83,8 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        1640,
-        240
+        2260,
+        1120
       ],
       "id": "6a51b0b7-d302-4c2b-81a1-46435fcf65b2",
       "name": "Google Calendar",
@@ -109,8 +109,8 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        2100,
-        180
+        2900,
+        840
       ],
       "id": "79912694-f1f6-45e2-b144-f06bb792a9d3",
       "name": "Google Calendar1",
@@ -138,8 +138,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2100,
-        400
+        2900,
+        1380
       ],
       "id": "8d7397d2-662a-4228-97f2-8af09a9486e9",
       "name": "Edit Fields"
@@ -171,8 +171,8 @@
       "name": "Inputs",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "position": [
-        280,
-        460
+        0,
+        1120
       ]
     },
     {
@@ -229,8 +229,8 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        740,
-        320
+        640,
+        1020
       ],
       "id": "5645e981-fd89-406e-ac04-ac54590406a9",
       "name": "Verificar_Disponibilidad V2"
@@ -276,8 +276,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        520,
-        320
+        220,
+        1020
       ],
       "id": "d761b390-fc2d-4b19-a450-7bf0275b7862",
       "name": "Datos Flujo"
@@ -323,8 +323,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        300,
-        220
+        0,
+        920
       ],
       "id": "168a6f3e-615f-4127-b093-06160c1ec114",
       "name": "Datos Demo"
@@ -357,8 +357,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1400,
-        220
+        1920,
+        960
       ],
       "id": "e4687cb5-294f-457f-afdb-0c9f525ac9ae",
       "name": "Error Exsite"
@@ -399,8 +399,8 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        1180,
-        220
+        1500,
+        940
       ],
       "id": "6a197a7e-332e-4e89-80ea-4a62d720b140",
       "name": "Profesional_Id"
@@ -432,11 +432,137 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1860,
-        240
+        2580,
+        1120
       ],
       "id": "9e6a8dc8-4a2c-48dd-bb98-27b5e95e7486",
       "name": "ClienteID"
+    },
+    {
+      "parameters": {
+        "content": "## 📨 Parámetros recibidos\nEl flujo recibe:\n- fecha\n- hora\n- profesional\n- telefono\n- id_cliente",
+        "height": 560,
+        "width": 680,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -290,
+        720
+      ],
+      "id": "2a3637c3-8e4f-48fd-8a5c-adae3fb8f4aa",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 📅 Verificar cita existente\nLlama al subflujo Verificar_Disponibilidad_V2 para comprobar si existe una cita en ese horario.\nResultado: true si existe, false si no.",
+        "height": 560
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        560,
+        720
+      ],
+      "id": "f8a32142-cc96-4337-83fa-a26b320a1da5",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 🚫 No existe cita\nSi Verificar_Disponibilidad devuelve false, se detiene el flujo (nodo No Existe).",
+        "height": 560,
+        "width": 380,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        940,
+        720
+      ],
+      "id": "ed2818cd-d16a-416c-b711-41b5d66c0004",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## 📆 Profesional_Id\nLlama al subflujo Obtener_Id_Profesional_V2 para recuperar el ID del calendario del profesional.\n\n",
+        "height": 560,
+        "width": 300,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1420,
+        720
+      ],
+      "id": "c7feb19f-824e-4112-b719-508ca24d7593",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## 🧪 Validar calendarId\nComprueba con Error Existe si hubo fallo en el subflujo anterior.\n- Si hay error → flujo se detiene.\n\n",
+        "height": 560,
+        "width": 560,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        720
+      ],
+      "id": "42e9330a-659f-4822-9906-31f09ac27937",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## 📞 Verificar identidad\nNodo ClienteID compara el teléfono recibido con el del evento.\nSolo si coincide, se permite cancelar.",
+        "height": 300,
+        "width": 540,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2220,
+        980
+      ],
+      "id": "0679804c-8a97-45f3-aa01-8d5434185a88",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Si no coincide el cliente\nSi el teléfono no coincide, el flujo pasa por Edit Fields para informar que no se puede cancelar la cita.\n\n",
+        "height": 380,
+        "width": 280,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        1160
+      ],
+      "id": "df526e46-8e4b-425c-b628-9991783bbbb3",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## 🗑️ Cancelar cita\nSi la validación es correcta, el nodo Google Calendar1 elimina el evento.\n\n",
+        "height": 320,
+        "width": 340,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2820,
+        680
+      ],
+      "id": "00d0701b-7581-4b93-9fc4-563b936cdea0",
+      "name": "Sticky Note7"
     }
   ],
   "pinData": {},
@@ -571,7 +697,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "8861c6fc-1236-4fc6-9608-e98eb421e27f",
+  "versionId": "117b0b0f-90dd-4274-a00a-b2354385a214",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d051716d31b47e82869244b00323064210b99143f3d8d00d35d6b51296b9d2e4"

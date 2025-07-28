@@ -6,8 +6,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -1960,
-        300
+        -2040,
+        240
       ],
       "id": "0ec132e5-0f8c-43eb-b8f8-69234eb2f5a1",
       "name": "When clicking ‘Test workflow’"
@@ -40,7 +40,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -860,
+        -620,
         100
       ],
       "id": "cf8ebb2a-269a-4bfb-b4de-74c512b4414d",
@@ -63,8 +63,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -300,
-        240
+        -400,
+        280
       ],
       "id": "24c313f1-9cbf-4a67-a8c1-edb2d13ce1a3",
       "name": "No Existe"
@@ -122,7 +122,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        -1060,
+        -1040,
         100
       ],
       "id": "8e73913d-5b55-4890-b072-46e6972f7e07",
@@ -164,8 +164,8 @@
       "name": "Inputs",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "position": [
-        -1840,
-        -40
+        -1820,
+        -20
       ]
     },
     {
@@ -227,8 +227,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1720,
-        300
+        -1860,
+        240
       ],
       "id": "63656580-e390-4660-a1f3-c2366fd8147e",
       "name": "Datos Demo"
@@ -292,7 +292,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1320,
+        -1480,
         100
       ],
       "id": "e77f92f9-b5fa-4fd3-a20c-f5f584044f79",
@@ -312,8 +312,8 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        -180,
-        0
+        660,
+        100
       ],
       "id": "ce1790ca-95dd-447d-8ba6-4fd71e176a1b",
       "name": "Obtener Evento Calendar",
@@ -341,8 +341,8 @@
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        300,
-        -160
+        1620,
+        80
       ],
       "id": "8e1ad395-9ba3-46bd-8cd0-a820c22032e3",
       "name": "Modificar Evento",
@@ -381,8 +381,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -420,
-        -60
+        200,
+        80
       ],
       "id": "3b151aed-de6e-408e-adc4-7d35183d4bba",
       "name": "Error Exsite"
@@ -423,8 +423,8 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [
-        -620,
-        -60
+        -80,
+        80
       ],
       "id": "4fc7504b-c27b-43d5-9305-03504860f416",
       "name": "Profesional_Id"
@@ -446,8 +446,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        320,
-        100
+        1240,
+        280
       ],
       "id": "d3dd85e6-d208-407d-b463-8056253a4815",
       "name": "No vinculada al cliente"
@@ -479,11 +479,121 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        40,
-        0
+        1000,
+        100
       ],
       "id": "1c52330a-6968-4143-826e-d81bf3dca5dd",
       "name": "ClienteID"
+    },
+    {
+      "parameters": {
+        "content": "## 📥 Parámetros de entrada\nEl flujo recibe los siguientes parámetros:\n- fecha\n- hora\n- profesional\n- telefono\n- id_cliente",
+        "height": 580,
+        "width": 820,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2080,
+        -140
+      ],
+      "id": "47ad4387-1ec0-411d-995d-4f3780487d83",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 🔎 Verificar disponibilidad\nSe llama al subflujo Verificar_Disponibilidad_V2 para comprobar si ya hay una cita registrada con esa fecha, hora y profesional.\n\n",
+        "height": 580,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1180,
+        -140
+      ],
+      "id": "012d0014-d052-47a8-b21c-c7438532f42b",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## ❌ No existe cita\nSi la cita no existe, se detiene el flujo mostrando un mensaje en el nodo No Existe.\n\n",
+        "height": 580,
+        "width": 380,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -660,
+        -140
+      ],
+      "id": "a31098d7-9b98-4203-9400-65627bc1f51a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## 📅 ID del profesional \nSe llama al subflujo Obtener_Id_Profesional_V2. Luego, se valida con Error Existe. Si hay error, el flujo se detiene.\n\n",
+        "height": 580,
+        "width": 500,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        -140
+      ],
+      "id": "0fcde212-deb7-434d-8ccb-4dd209230f02",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## 📆 Obtener evento\nSe busca el evento actual del profesional en Google Calendar usando fecha y hora para obtener el ID del evento.\n\n",
+        "height": 580,
+        "width": 320,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        540,
+        -140
+      ],
+      "id": "96a3f604-2942-4e14-ac2d-bbf03925a3af",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## 🔐 Valida cliente\n \nSe compara el id_cliente para asegurarse de que la cita pertenece al cliente. Si no coincide, el flujo se detiene con un mensaje.\n\n",
+        "height": 580,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -140
+      ],
+      "id": "65221988-cf32-429a-b8fc-3859892be015",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## ✅ Actualizar evento\nSi todo es correcto, se modifica el evento en Google Calendar con los nuevos datos de fecha, hora o profesional.\n\n",
+        "height": 580,
+        "width": 380,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1480,
+        -140
+      ],
+      "id": "84d0b05b-f3e5-4a2c-a18f-63697ec6984e",
+      "name": "Sticky Note6"
     }
   ],
   "pinData": {},
@@ -618,7 +728,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "5065e60f-7b69-4a8c-8c1c-cb2a7eee5dc0",
+  "versionId": "286bc0de-66d8-4550-81a0-111ee23bf6a2",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d051716d31b47e82869244b00323064210b99143f3d8d00d35d6b51296b9d2e4"
